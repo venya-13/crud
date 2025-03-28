@@ -7,14 +7,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func PostUser(context *gin.Context) {
+func PostUser(ginContext *gin.Context) {
 
 	var body struct {
 		Name    string
 		Surname string
 	}
 
-	context.Bind(&body)
+	ginContext.Bind(&body)
 
 	//Create a post
 
@@ -23,42 +23,42 @@ func PostUser(context *gin.Context) {
 	result := initializers.DB.Create(&post)
 
 	if result.Error != nil {
-		context.Status(500)
+		ginContext.Status(500)
 		return
 	}
 
-	context.JSON(200, gin.H{"post": post})
+	ginContext.JSON(200, gin.H{"post": post})
 }
 
-func GetAllUsers(context *gin.Context) {
+func GetAllUsers(ginContext *gin.Context) {
 
 	var posts []models.User
 	initializers.DB.Find(&posts)
 
-	context.JSON(200, gin.H{"post": posts})
+	ginContext.JSON(200, gin.H{"post": posts})
 
 }
 
-func GetUserById(context *gin.Context) {
+func GetUserById(ginContext *gin.Context) {
 
-	id := context.Param("id")
+	id := ginContext.Param("id")
 
 	var post []models.User
 	initializers.DB.First(&post, id)
 
-	context.JSON(200, gin.H{"post": post})
+	ginContext.JSON(200, gin.H{"post": post})
 
 }
 
-func UpdateUser(context *gin.Context) {
-	id := context.Param("id")
+func UpdateUser(ginContext *gin.Context) {
+	id := ginContext.Param("id")
 
 	var body struct {
 		Name    string
 		Surname string
 	}
 
-	context.Bind(&body)
+	ginContext.Bind(&body)
 
 	var post []models.User
 	initializers.DB.First(&post, id)
@@ -68,13 +68,13 @@ func UpdateUser(context *gin.Context) {
 		Surname: body.Surname,
 	})
 
-	context.JSON(200, gin.H{"post": post})
+	ginContext.JSON(200, gin.H{"post": post})
 }
 
-func DeleteUser(context *gin.Context) {
-	id := context.Param("id")
+func DeleteUser(ginContext *gin.Context) {
+	id := ginContext.Param("id")
 
 	initializers.DB.Delete(&models.User{}, id)
 
-	context.Status(200)
+	ginContext.Status(200)
 }
