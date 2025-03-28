@@ -5,11 +5,9 @@ import (
 	"crud/models"
 )
 
-func init() {
+func Migrate() {
 	initializers.LoadEnvVariables()
 	initializers.ConnectToDB()
-}
 
-func Migrate() {
-	initializers.DB.AutoMigrate(&models.Post{})
+	initializers.DB.AutoMigrate(&models.User{})
 }

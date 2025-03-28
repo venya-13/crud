@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func PostsCreate(context *gin.Context) {
+func PostUser(context *gin.Context) {
 
 	var body struct {
 		Name    string
@@ -18,39 +18,39 @@ func PostsCreate(context *gin.Context) {
 
 	//Create a post
 
-	post := models.Post{Name: body.Name, Surname: body.Surname}
+	post := models.User{Name: body.Name, Surname: body.Surname}
 
 	result := initializers.DB.Create(&post)
 
 	if result.Error != nil {
-		context.Status(400)
+		context.Status(500)
 		return
 	}
 
 	context.JSON(200, gin.H{"post": post})
 }
 
-func PostsIndex(context *gin.Context) {
+func GetAllUsers(context *gin.Context) {
 
-	var posts []models.Post
+	var posts []models.User
 	initializers.DB.Find(&posts)
 
 	context.JSON(200, gin.H{"post": posts})
 
 }
 
-func PostsShow(context *gin.Context) {
+func GetUserById(context *gin.Context) {
 
 	id := context.Param("id")
 
-	var post []models.Post
+	var post []models.User
 	initializers.DB.First(&post, id)
 
 	context.JSON(200, gin.H{"post": post})
 
 }
 
-func PostUpdate(context *gin.Context) {
+func UpdateUser(context *gin.Context) {
 	id := context.Param("id")
 
 	var body struct {
@@ -60,10 +60,10 @@ func PostUpdate(context *gin.Context) {
 
 	context.Bind(&body)
 
-	var post []models.Post
+	var post []models.User
 	initializers.DB.First(&post, id)
 
-	initializers.DB.Model(&post).Updates(models.Post{
+	initializers.DB.Model(&post).Updates(models.User{
 		Name:    body.Name,
 		Surname: body.Surname,
 	})
@@ -71,10 +71,10 @@ func PostUpdate(context *gin.Context) {
 	context.JSON(200, gin.H{"post": post})
 }
 
-func PostsDelete(context *gin.Context) {
+func DeleteUser(context *gin.Context) {
 	id := context.Param("id")
 
-	initializers.DB.Delete(&models.Post{}, id)
+	initializers.DB.Delete(&models.User{}, id)
 
 	context.Status(200)
 }

@@ -2,7 +2,7 @@ package models
 
 import "gorm.io/gorm"
 
-type Post struct {
+type User struct {
 	gorm.Model
 	Name    string
 	Surname string
