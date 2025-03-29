@@ -1,8 +1,8 @@
 package migrate
 
 import (
-	"crud/initializers"
-	"crud/models"
+	"crud/internal/initializers"
+	"crud/internal/models"
 )
 
 func Migrate() {

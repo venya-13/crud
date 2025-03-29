@@ -1,11 +1,23 @@
 package controllers
 
 import (
-	"crud/initializers"
-	"crud/models"
+	"crud/internal/initializers"
+	"crud/internal/models"
 
 	"github.com/gin-gonic/gin"
 )
+
+func StarListening() {
+	router := gin.Default()
+
+	router.POST("/posts", PostUser)
+	router.PUT("/posts/:id", UpdateUser)
+	router.GET("/posts", GetAllUsers)
+	router.GET("/posts/:id", GetUserById)
+	router.DELETE("/posts/:id", DeleteUser)
+
+	router.Run()
+}
 
 func PostUser(ginContext *gin.Context) {
 
@@ -15,8 +27,6 @@ func PostUser(ginContext *gin.Context) {
 	}
 
 	ginContext.Bind(&body)
-
-	//Create a post
 
 	post := models.User{Name: body.Name, Surname: body.Surname}
 
