@@ -1,23 +1,10 @@
-package controllers
+package postgresdb
 
 import (
-	"crud/internal/initializers"
-	"crud/internal/models"
+	"crud/internal/postgres-db/models"
 
 	"github.com/gin-gonic/gin"
 )
-
-func StarListening() {
-	router := gin.Default()
-
-	router.POST("/posts", PostUser)
-	router.PUT("/posts/:id", UpdateUser)
-	router.GET("/posts", GetAllUsers)
-	router.GET("/posts/:id", GetUserById)
-	router.DELETE("/posts/:id", DeleteUser)
-
-	router.Run()
-}
 
 func PostUser(ginContext *gin.Context) {
 
@@ -30,7 +17,7 @@ func PostUser(ginContext *gin.Context) {
 
 	post := models.User{Name: body.Name, Surname: body.Surname}
 
-	result := initializers.DB.Create(&post)
+	result := db.Create(&post)
 
 	if result.Error != nil {
 		ginContext.Status(500)
@@ -43,7 +30,7 @@ func PostUser(ginContext *gin.Context) {
 func GetAllUsers(ginContext *gin.Context) {
 
 	var posts []models.User
-	initializers.DB.Find(&posts)
+	db.Find(&posts)
 
 	ginContext.JSON(200, gin.H{"post": posts})
 
@@ -54,7 +41,7 @@ func GetUserById(ginContext *gin.Context) {
 	id := ginContext.Param("id")
 
 	var post []models.User
-	initializers.DB.First(&post, id)
+	db.First(&post, id)
 
 	ginContext.JSON(200, gin.H{"post": post})
 
@@ -71,9 +58,9 @@ func UpdateUser(ginContext *gin.Context) {
 	ginContext.Bind(&body)
 
 	var post []models.User
-	initializers.DB.First(&post, id)
+	db.First(&post, id)
 
-	initializers.DB.Model(&post).Updates(models.User{
+	db.Model(&post).Updates(models.User{
 		Name:    body.Name,
 		Surname: body.Surname,
 	})
@@ -84,7 +71,7 @@ func UpdateUser(ginContext *gin.Context) {
 func DeleteUser(ginContext *gin.Context) {
 	id := ginContext.Param("id")
 
-	initializers.DB.Delete(&models.User{}, id)
+	db.Delete(&models.User{}, id)
 
 	ginContext.Status(200)
 }

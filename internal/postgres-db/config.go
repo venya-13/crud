@@ -1,4 +1,8 @@
-package cmd
+package postgresdb
+
+type DB struct {
+	connectionString string
+}
 
 type Config struct {
 	Port  string `env:"PORT" envDefault:"3000"`

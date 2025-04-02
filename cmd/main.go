@@ -1,38 +1,18 @@
 package cmd
 
 import (
-	"crud/internal/controllers"
-	"crud/internal/initializers"
-	"crud/migrate"
+	httpserver "crud/internal/http-server"
+	postgresdb "crud/internal/postgres-db"
 	"fmt"
-	"log"
-
-	"github.com/caarlos0/env/v6"
 	//"github.com/gin-gonic/gin"
 )
 
 func main() {
 	fmt.Println("Start")
 
-	cfg := Config{}
-	if err := env.Parse(&cfg); err != nil {
-		log.Fatalf("%+v", err)
-	}
+	postgresdb.ConnectToDB()
 
-	initializers.LoadEnvVariables()
-	initializers.ConnectToDB()
+	postgresdb.Migrate()
 
-	migrate.Migrate()
-
-	// router := gin.Default()
-
-	// router.POST("/posts", controllers.PostUser)
-	// router.PUT("/posts/:id", controllers.UpdateUser)
-	// router.GET("/posts", controllers.GetAllUsers)
-	// router.GET("/posts/:id", controllers.GetUserById)
-	// router.DELETE("/posts/:id", controllers.DeleteUser)
-
-	// router.Run()
-
-	controllers.StarListening()
+	httpserver.StartRouter()
 }
