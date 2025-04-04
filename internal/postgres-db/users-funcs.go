@@ -1,12 +1,12 @@
 package postgresdb
 
 import (
-	"crud/internal/service"
+	"crud/internal/postgres-db/models"
 
 	"github.com/gin-gonic/gin"
 )
 
-func CreateUser(ginContext *gin.Context, user *service.User) {
+func CreateUser(ginContext *gin.Context) (models.User, error) {
 
 	var body struct {
 		Name    string
@@ -15,40 +15,45 @@ func CreateUser(ginContext *gin.Context, user *service.User) {
 
 	ginContext.Bind(&body)
 
-	//post := service.User{Name: body.Name, Surname: body.Surname}
-	*user = service.User{Name: body.Name, Surname: body.Surname}
+	post := models.User{Name: body.Name, Surname: body.Surname}
 
-	result := db.Create(&user)
+	result := db.Create(&post)
 
 	if result.Error != nil {
 		ginContext.Status(500)
-		return
+		return post, result.Error
 	}
 
-	ginContext.JSON(200, gin.H{"post": user})
+	return post, nil
+
+	// ginContext.JSON(200, gin.H{"post": post})
 }
 
-func GetAllUsers(ginContext *gin.Context, user *service.User) {
+func GetAllUsers(ginContext *gin.Context) []models.User {
 
-	var posts []service.User
+	var posts []models.User
 	db.Find(&posts)
 
-	ginContext.JSON(200, gin.H{"post": posts})
+	return posts
+
+	//ginContext.JSON(200, gin.H{"post": posts})
 
 }
 
-func GetUserById(ginContext *gin.Context) {
+func GetUserById(ginContext *gin.Context) []models.User {
 
 	id := ginContext.Param("id")
 
-	var post []service.User
+	var post []models.User
 	db.First(&post, id)
 
-	ginContext.JSON(200, gin.H{"post": post})
+	return post
+
+	// ginContext.JSON(200, gin.H{"post": post})
 
 }
 
-func UpdateUser(ginContext *gin.Context) {
+func UpdateUser(ginContext *gin.Context) []models.User {
 	id := ginContext.Param("id")
 
 	var body struct {
@@ -58,21 +63,23 @@ func UpdateUser(ginContext *gin.Context) {
 
 	ginContext.Bind(&body)
 
-	var post []service.User
+	var post []models.User
 	db.First(&post, id)
 
-	db.Model(&post).Updates(service.User{
+	db.Model(&post).Updates(models.User{
 		Name:    body.Name,
 		Surname: body.Surname,
 	})
 
-	ginContext.JSON(200, gin.H{"post": post})
+	return post
+
+	//ginContext.JSON(200, gin.H{"post": post})
 }
 
 func DeleteUser(ginContext *gin.Context) {
 	id := ginContext.Param("id")
 
-	db.Delete(&service.User{}, id)
+	db.Delete(&models.User{}, id)
 
 	ginContext.Status(200)
 }

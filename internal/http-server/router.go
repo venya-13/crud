@@ -16,11 +16,11 @@ func StartRouter() {
 
 	router := gin.Default()
 
-	// router.POST("/posts", service.DB.CreateUser)
-	// router.PUT("/posts/:id", UpdateUser)
-	// router.GET("/posts", GetAllUsers)
-	// router.GET("/posts/:id", GetUserById)
-	// router.DELETE("/posts/:id", DeleteUser)
+	router.POST("/posts", CreateUserHttp)
+	router.PUT("/posts/:id", UpdateUserHttp)
+	router.GET("/posts", GetAllUsersHttp)
+	router.GET("/posts/:id", GetUserByIdHttp)
+	router.DELETE("/posts/:id", DeleteUserHttp)
 
-	router.Run()
+	router.Run(config.Port)
 }

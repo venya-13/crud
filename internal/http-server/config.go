@@ -1,5 +1,5 @@
 package httpserver
 
 type Config struct {
-	Port string `env:"PORT" envDefault:"5431"`
+	Port string `env:"PORT" envDefault:":3000"`
 }

@@ -1,6 +1,7 @@
 package postgresdb
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/caarlos0/env"
@@ -19,6 +20,8 @@ func ConnectToDB() {
 	}
 
 	dsn := config.DBUrl
+
+	fmt.Println(dsn)
 
 	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
