@@ -1,5 +1,7 @@
 package postgresdb
 
+// Read about Prefixes
+
 type DB struct {
 	connectionString string
 }

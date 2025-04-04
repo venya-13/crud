@@ -7,6 +7,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Decide where the procces is starting, and fix the router
+
 func StartRouter() {
 
 	config := Config{}

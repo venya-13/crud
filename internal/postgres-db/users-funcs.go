@@ -6,6 +6,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Problems :
+// importing gin context. We need to get ready variables from http package
+// What I should do with DeleteUser function. I should send some message to http packege to let him know about deleting
+
 func CreateUser(ginContext *gin.Context) (models.User, error) {
 
 	var body struct {

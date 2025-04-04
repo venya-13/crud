@@ -2,9 +2,11 @@ package service
 
 import "github.com/gin-gonic/gin"
 
-// type Service struct {
-// 	db DB
-// }
+// Make http interface
+
+type Service struct {
+	db DB
+}
 
 type DB interface {
 	CreateUser(ginContext *gin.Context) (User, error)

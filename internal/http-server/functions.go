@@ -8,10 +8,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var body struct {
-	Name    string
-	Surname string
-}
+// Make the functions to help database throw the service. You need to get some info from gin. Look at file postgres-db/users-funcs.go
+// Check, is it okay to send nil in serive.
 
 func CreateUserHttp(ginContext *gin.Context, post models.User) {
 	user, err := service.DB.CreateUser(nil, ginContext)
