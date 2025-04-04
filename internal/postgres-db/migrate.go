@@ -1,10 +1,12 @@
 package postgresdb
 
-import "crud/internal/postgres-db/models"
+import (
+	"crud/internal/service"
+)
 
-func Migrate() {
+func Migrate(user *service.User) {
 
 	ConnectToDB()
 
-	db.AutoMigrate(&models.User{})
+	db.AutoMigrate(&user)
 }
