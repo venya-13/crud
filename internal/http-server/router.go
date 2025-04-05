@@ -7,8 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Decide where the procces is starting, and fix the router
-
 func StartRouter() {
 
 	config := Config{}
@@ -18,11 +16,11 @@ func StartRouter() {
 
 	router := gin.Default()
 
-	// router.POST("/posts", CreateUserHttp)
-	// router.PUT("/posts/:id", UpdateUserHttp)
-	// router.GET("/posts", GetAllUsersHttp)
-	// router.GET("/posts/:id", GetUserByIdHttp)
-	// router.DELETE("/posts/:id", DeleteUserHttp)
+	router.POST("/posts", CreateUserHttp)
+	router.PUT("/posts/:id", UpdateUserHttp)
+	router.GET("/posts", GetAllUsersHttp)
+	router.GET("/posts/:id", GetUserByIdHttp)
+	router.DELETE("/posts/:id", DeleteUserHttp)
 
 	router.Run(config.Port)
 }

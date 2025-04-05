@@ -1,16 +1,13 @@
 package service
 
-import "github.com/gin-gonic/gin"
-
-// Make http interface
-
 type Service struct {
 	db DB
 }
 
 type DB interface {
-	CreateUser(ginContext *gin.Context) (User, error)
-	GetAllUsers(ginContext *gin.Context) []User
-	GetUserById(ginContext *gin.Context) []User
-	UpdateUser(ginContext *gin.Context) []User
+	CreateUser(name string, surname string) (User, error)
+	GetAllUsers() []User
+	GetUserById(id string) []User
+	UpdateUser(id string, name string, surname string) []User
+	DeleteUser(id string)
 }

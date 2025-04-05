@@ -8,11 +8,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Make the functions to help database throw the service. You need to get some info from gin. Look at file postgres-db/users-funcs.go
 // Check, is it okay to send nil in serive.
 
-func CreateUserHttp(ginContext *gin.Context, post models.User) {
-	user, err := service.DB.CreateUser(nil, ginContext)
+func CreateUserHttp(ginContext *gin.Context) {
+	var post models.User
+
+	var body struct {
+		Name    string
+		Surname string
+	}
+
+	ginContext.Bind(&body)
+
+	user, err := service.DB.CreateUser(nil, body.Name, body.Surname)
 
 	if err != nil {
 		log.Println("CreateUserHttp: getting from database error")
@@ -22,8 +30,9 @@ func CreateUserHttp(ginContext *gin.Context, post models.User) {
 	ginContext.JSON(200, gin.H{"post": post})
 }
 
-func GetAllUsersHttp(ginContext *gin.Context, posts []models.User) {
-	users := service.DB.GetAllUsers(nil, ginContext)
+func GetAllUsersHttp(ginContext *gin.Context) {
+	var posts []models.User
+	users := service.DB.GetAllUsers(nil)
 
 	for _, user := range users {
 		posts = append(posts, models.User{
@@ -36,9 +45,13 @@ func GetAllUsersHttp(ginContext *gin.Context, posts []models.User) {
 
 }
 
-func GetUserByIdHttp(ginContext *gin.Context, post []models.User) {
+func GetUserByIdHttp(ginContext *gin.Context) {
 
-	users := service.DB.GetAllUsers(nil, ginContext)
+	var post []models.User
+
+	id := ginContext.Param("id")
+
+	users := service.DB.GetUserById(nil, id)
 
 	for _, user := range users {
 		post = append(post, models.User{
@@ -51,9 +64,20 @@ func GetUserByIdHttp(ginContext *gin.Context, post []models.User) {
 
 }
 
-func UpdateUserHttp(ginContext *gin.Context, post []models.User) {
+func UpdateUserHttp(ginContext *gin.Context) {
 
-	users := service.DB.GetAllUsers(nil, ginContext)
+	var post []models.User
+
+	id := ginContext.Param("id")
+
+	var body struct {
+		Name    string
+		Surname string
+	}
+
+	ginContext.Bind(&body)
+
+	users := service.DB.UpdateUser(nil, id, body.Name, body.Surname)
 
 	for _, user := range users {
 		post = append(post, models.User{
@@ -66,12 +90,9 @@ func UpdateUserHttp(ginContext *gin.Context, post []models.User) {
 }
 
 func DeleteUserHttp(ginContext *gin.Context) {
+	id := ginContext.Param("id")
+
+	service.DB.DeleteUser(nil, id)
+
 	ginContext.Status(200)
 }
-
-// func Bind(ginContext *gin.Context) *body {
-
-// 	ginContext.Bind(&body)
-
-// 	return &body
-// }

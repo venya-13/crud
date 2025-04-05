@@ -2,88 +2,57 @@ package postgresdb
 
 import (
 	"crud/internal/postgres-db/models"
-
-	"github.com/gin-gonic/gin"
 )
 
 // Problems :
-// importing gin context. We need to get ready variables from http package
-// What I should do with DeleteUser function. I should send some message to http packege to let him know about deleting
+// gin-context.bind problem
 
-func CreateUser(ginContext *gin.Context) (models.User, error) {
+func CreateUser(name string, surname string) (models.User, error) {
 
-	var body struct {
-		Name    string
-		Surname string
-	}
-
-	ginContext.Bind(&body)
-
-	post := models.User{Name: body.Name, Surname: body.Surname}
+	post := models.User{Name: name, Surname: surname}
 
 	result := db.Create(&post)
 
 	if result.Error != nil {
-		ginContext.Status(500)
 		return post, result.Error
 	}
 
 	return post, nil
 
-	// ginContext.JSON(200, gin.H{"post": post})
 }
 
-func GetAllUsers(ginContext *gin.Context) []models.User {
+func GetAllUsers() []models.User {
 
 	var posts []models.User
 	db.Find(&posts)
 
 	return posts
 
-	//ginContext.JSON(200, gin.H{"post": posts})
-
 }
 
-func GetUserById(ginContext *gin.Context) []models.User {
-
-	id := ginContext.Param("id")
+func GetUserById(id string) []models.User {
 
 	var post []models.User
 	db.First(&post, id)
 
 	return post
 
-	// ginContext.JSON(200, gin.H{"post": post})
-
 }
 
-func UpdateUser(ginContext *gin.Context) []models.User {
-	id := ginContext.Param("id")
-
-	var body struct {
-		Name    string
-		Surname string
-	}
-
-	ginContext.Bind(&body)
+func UpdateUser(id string, name string, surname string) []models.User {
 
 	var post []models.User
 	db.First(&post, id)
 
 	db.Model(&post).Updates(models.User{
-		Name:    body.Name,
-		Surname: body.Surname,
+		Name:    name,
+		Surname: surname,
 	})
 
 	return post
-
-	//ginContext.JSON(200, gin.H{"post": post})
 }
 
-func DeleteUser(ginContext *gin.Context) {
-	id := ginContext.Param("id")
+func DeleteUser(id string) {
 
 	db.Delete(&models.User{}, id)
-
-	ginContext.Status(200)
 }
