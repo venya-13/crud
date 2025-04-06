@@ -2,12 +2,12 @@ package postgresdb
 
 import (
 	"crud/internal/postgres-db/models"
+	"log"
 )
 
-// Problems :
-// gin-context.bind problem
-
 func CreateUser(name string, surname string) (models.User, error) {
+
+	log.Println("Creating user")
 
 	post := models.User{Name: name, Surname: surname}
 
