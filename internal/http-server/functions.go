@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Check, is it okay to send nil in serive.
+// Check, is it okay to send nil in service.
 
 func CreateUserHttp(ginContext *gin.Context) {
 	var post models.User
@@ -23,7 +23,7 @@ func CreateUserHttp(ginContext *gin.Context) {
 	user, err := service.DB.CreateUser(nil, body.Name, body.Surname)
 
 	if err != nil {
-		log.Println("CreateUserHttp: getting from database error")
+		log.Println("CreateUserHttp: database error")
 	}
 
 	post = models.User(user)

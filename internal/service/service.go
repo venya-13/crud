@@ -1,7 +1,5 @@
 package service
 
-// Something wrong here
-
 type Service struct {
 	db DB
 }
