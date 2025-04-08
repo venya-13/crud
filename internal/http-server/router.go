@@ -1,26 +1,54 @@
 package httpserver
 
 import (
-	"log"
+	"crud/internal/service"
+	"errors"
+	"fmt"
+	"net/http"
 
-	"github.com/caarlos0/env/v6"
 	"github.com/gin-gonic/gin"
 )
 
-func StartRouter() {
-
-	config := Config{}
-	if err := env.Parse(&config); err != nil {
-		log.Fatalf("%+v", err)
+type (
+	Server struct {
+		port   int
+		router *gin.Engine
+		svc    Service
 	}
 
-	router := gin.Default()
+	Config struct {
+		Port int `envconfig:"PORT" default:"3000"`
+	}
+)
 
-	router.POST("/posts", CreateUserHttp)
-	router.PUT("/posts/:id", UpdateUserHttp)
-	router.GET("/posts", GetAllUsersHttp)
-	router.GET("/posts/:id", GetUserByIdHttp)
-	router.DELETE("/posts/:id", DeleteUserHttp)
+type Service interface {
+	CreateUser(user *service.User) error
+	GetAllUsers() []service.User
+	GetUserById(id string) []service.User
+	UpdateUser(id string, name string, surname string) []service.User
+	DeleteUser(id string)
+}
 
-	router.Run(config.Port)
+func New(cfg Config, svc Service) *Server {
+	s := Server{
+		port:   cfg.Port,
+		router: gin.Default(),
+		svc:    svc,
+	}
+
+	s.router.POST("/posts", s.CreateUser)
+	s.router.PUT("/posts/:id", s.UpdateUser)
+	s.router.GET("/posts", s.GetAllUsers)
+	s.router.GET("/posts/:id", s.GetUserById)
+	s.router.DELETE("/posts/:id", s.DeleteUser)
+
+	return &s
+}
+
+func (s *Server) Run() error {
+	if err := s.router.Run(fmt.Sprintf(":%d", s.port)); !errors.Is(err, http.ErrServerClosed) {
+		return fmt.Errorf("failed to run server: %w", err)
+	}
+
+	return nil
 }

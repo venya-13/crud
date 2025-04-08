@@ -2,57 +2,55 @@ package postgresdb
 
 import (
 	"crud/internal/postgres-db/models"
+	"crud/internal/service"
 	"log"
 )
 
-func CreateUser(name string, surname string) (models.User, error) {
+func (db *DB) CreateUser(name string, surname string) error {
 
 	log.Println("Creating user")
 
 	post := models.User{Name: name, Surname: surname}
 
-	result := db.Create(&post)
+	result := db.db.Create(&post)
 
 	if result.Error != nil {
-		return post, result.Error
+		return result.Error
 	}
 
-	return post, nil
+	return nil
 
 }
 
-func GetAllUsers() []models.User {
+func (db *DB) GetAllUsers() []service.User {
 
-	var posts []models.User
-	db.Find(&posts)
+	var posts []service.User
+	db.db.Find(&posts)
 
 	return posts
 
 }
 
-func GetUserById(id string) []models.User {
+func (db *DB) GetUserById(id string) []service.User {
 
-	var post []models.User
-	db.First(&post, id)
+	var user []service.User
+	db.db.First(&user, id)
 
-	return post
+	return user
 
 }
 
-func UpdateUser(id string, name string, surname string) []models.User {
+func (db *DB) UpdateUser(id string, user service.User) []service.User {
 
-	var post []models.User
-	db.First(&post, id)
+	var post []service.User
+	db.db.First(&post, id)
 
-	db.Model(&post).Updates(models.User{
-		Name:    name,
-		Surname: surname,
-	})
+	db.db.Model(&post).Updates(user)
 
 	return post
 }
 
-func DeleteUser(id string) {
+func (db *DB) DeleteUser(id string) {
 
-	db.Delete(&models.User{}, id)
+	db.db.Delete(&service.User{}, id)
 }

@@ -8,9 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Check, is it okay to send nil in service.
-
-func CreateUserHttp(ginContext *gin.Context) {
+func (s *Server) CreateUser(ginContext *gin.Context) {
 	var post models.User
 
 	var body struct {
@@ -20,19 +18,27 @@ func CreateUserHttp(ginContext *gin.Context) {
 
 	ginContext.Bind(&body)
 
-	user, err := service.DB.CreateUser(nil, body.Name, body.Surname)
+	err := s.svc.CreateUser(&service.User{
+		Name:    body.Name,
+		Surname: body.Surname,
+	})
 
 	if err != nil {
-		log.Println("CreateUserHttp: database error")
+		log.Println("CreateUser: database error")
+	}
+
+	user := models.User{
+		Name:    body.Name,
+		Surname: body.Surname,
 	}
 
 	post = models.User(user)
 	ginContext.JSON(200, gin.H{"post": post})
 }
 
-func GetAllUsersHttp(ginContext *gin.Context) {
+func (s *Server) GetAllUsers(ginContext *gin.Context) {
 	var posts []models.User
-	users := service.DB.GetAllUsers(nil)
+	users := s.svc.GetAllUsers()
 
 	for _, user := range users {
 		posts = append(posts, models.User{
@@ -45,13 +51,13 @@ func GetAllUsersHttp(ginContext *gin.Context) {
 
 }
 
-func GetUserByIdHttp(ginContext *gin.Context) {
+func (s *Server) GetUserById(ginContext *gin.Context) {
 
 	var post []models.User
 
 	id := ginContext.Param("id")
 
-	users := service.DB.GetUserById(nil, id)
+	users := s.svc.GetUserById(id)
 
 	for _, user := range users {
 		post = append(post, models.User{
@@ -64,7 +70,7 @@ func GetUserByIdHttp(ginContext *gin.Context) {
 
 }
 
-func UpdateUserHttp(ginContext *gin.Context) {
+func (s *Server) UpdateUser(ginContext *gin.Context) {
 
 	var post []models.User
 
@@ -77,9 +83,9 @@ func UpdateUserHttp(ginContext *gin.Context) {
 
 	ginContext.Bind(&body)
 
-	users := service.DB.UpdateUser(nil, id, body.Name, body.Surname)
+	updatedUser := s.svc.UpdateUser(id, body.Name, body.Surname)
 
-	for _, user := range users {
+	for _, user := range updatedUser {
 		post = append(post, models.User{
 			Name:    user.Name,
 			Surname: user.Surname,
@@ -89,7 +95,7 @@ func UpdateUserHttp(ginContext *gin.Context) {
 	}
 }
 
-func DeleteUserHttp(ginContext *gin.Context) {
+func (s *Server) DeleteUser(ginContext *gin.Context) {
 	id := ginContext.Param("id")
 
 	service.DB.DeleteUser(nil, id)
