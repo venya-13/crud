@@ -1,38 +1,37 @@
-package cmd
+package main
 
 import (
-	"crud/internal/controllers"
-	"crud/internal/initializers"
-	"crud/migrate"
+	httpserver "crud/internal/http-server"
+	postgresdb "crud/internal/postgres-db"
+	"crud/internal/service"
 	"fmt"
 	"log"
+	"os"
 
-	"github.com/caarlos0/env/v6"
-	//"github.com/gin-gonic/gin"
+	"github.com/kelseyhightower/envconfig"
 )
 
 func main() {
 	fmt.Println("Start")
 
-	cfg := Config{}
-	if err := env.Parse(&cfg); err != nil {
-		log.Fatalf("%+v", err)
+	var cfg Config
+	if err := envconfig.Process("", &cfg); err != nil {
+		log.Fatalf("failed to load config: %v", err)
 	}
 
-	initializers.LoadEnvVariables()
-	initializers.ConnectToDB()
+	db, err := postgresdb.New(cfg.Postgres)
 
-	migrate.Migrate()
+	if err != nil {
+		fmt.Println("Error connecting to database:", err)
+		os.Exit(1)
+	}
 
-	// router := gin.Default()
+	svc := service.New(db)
 
-	// router.POST("/posts", controllers.PostUser)
-	// router.PUT("/posts/:id", controllers.UpdateUser)
-	// router.GET("/posts", controllers.GetAllUsers)
-	// router.GET("/posts/:id", controllers.GetUserById)
-	// router.DELETE("/posts/:id", controllers.DeleteUser)
+	httpServer := httpserver.New(cfg.HttpServer, svc)
 
-	// router.Run()
+	if err := httpServer.Run(); err != nil {
+		log.Fatalf("Failed to run server: %v", err)
+	}
 
-	controllers.StarListening()
 }
