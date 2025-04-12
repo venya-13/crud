@@ -1,7 +1,6 @@
 package postgresdb
 
 import (
-	"fmt"
 	"log"
 
 	"gorm.io/driver/postgres"
@@ -22,8 +21,6 @@ type (
 
 func New(config Config) (*DB, error) {
 	dsn := config.DBUrl
-
-	fmt.Println(dsn)
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {

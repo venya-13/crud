@@ -12,6 +12,7 @@ func (s *Server) CreateUser(ginContext *gin.Context) {
 	var post models.User
 
 	var body struct {
+		Id      uint
 		Name    string
 		Surname string
 	}
@@ -19,6 +20,7 @@ func (s *Server) CreateUser(ginContext *gin.Context) {
 	ginContext.Bind(&body)
 
 	err := s.svc.CreateUser(&service.User{
+		Id:      body.Id,
 		Name:    body.Name,
 		Surname: body.Surname,
 	})
@@ -28,6 +30,7 @@ func (s *Server) CreateUser(ginContext *gin.Context) {
 	}
 
 	user := models.User{
+		Id:      body.Id,
 		Name:    body.Name,
 		Surname: body.Surname,
 	}
@@ -42,6 +45,7 @@ func (s *Server) GetAllUsers(ginContext *gin.Context) {
 
 	for _, user := range users {
 		posts = append(posts, models.User{
+			Id:      user.Id,
 			Name:    user.Name,
 			Surname: user.Surname,
 		})
@@ -61,6 +65,7 @@ func (s *Server) GetUserById(ginContext *gin.Context) {
 
 	for _, user := range users {
 		post = append(post, models.User{
+			Id:      user.Id,
 			Name:    user.Name,
 			Surname: user.Surname,
 		})
@@ -77,16 +82,22 @@ func (s *Server) UpdateUser(ginContext *gin.Context) {
 	id := ginContext.Param("id")
 
 	var body struct {
+		Id      uint
 		Name    string
 		Surname string
 	}
 
 	ginContext.Bind(&body)
 
-	updatedUser := s.svc.UpdateUser(id, body.Name, body.Surname)
+	updatedUser := s.svc.UpdateUser(id, &service.User{
+		Id:      body.Id,
+		Name:    body.Name,
+		Surname: body.Surname,
+	})
 
 	for _, user := range updatedUser {
 		post = append(post, models.User{
+			Id:      user.Id,
 			Name:    user.Name,
 			Surname: user.Surname,
 		})
@@ -98,7 +109,7 @@ func (s *Server) UpdateUser(ginContext *gin.Context) {
 func (s *Server) DeleteUser(ginContext *gin.Context) {
 	id := ginContext.Param("id")
 
-	service.DB.DeleteUser(nil, id)
+	s.svc.DeleteUser(id)
 
 	ginContext.Status(200)
 }

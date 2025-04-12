@@ -7,7 +7,7 @@ type Service struct {
 }
 
 type DB interface {
-	CreateUser(name string, surname string) error
+	CreateUser(name string, surname string, id uint) error
 	GetAllUsers() []User
 	GetUserById(id string) []User
 	UpdateUser(id string, user User) []User
@@ -21,7 +21,7 @@ func New(db DB) *Service {
 }
 
 func (svc *Service) CreateUser(user *User) error {
-	err := svc.db.CreateUser(user.Name, user.Surname)
+	err := svc.db.CreateUser(user.Name, user.Surname, user.Id)
 
 	if err != nil {
 		fmt.Println("Create user error", err)
@@ -43,13 +43,9 @@ func (svc *Service) GetUserById(id string) []User {
 	return userById
 }
 
-func (svc *Service) UpdateUser(id string, name string, surname string) []User {
-	user := User{
-		Name:    name,
-		Surname: surname,
-	}
+func (svc *Service) UpdateUser(id string, user *User) []User {
 
-	updatedUser := svc.db.UpdateUser(id, user)
+	updatedUser := svc.db.UpdateUser(id, *user)
 
 	return updatedUser
 }
