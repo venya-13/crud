@@ -1,14 +1,12 @@
 package service
 
-import "fmt"
-
 type Service struct {
 	db DB
 }
 
 type DB interface {
 	CreateUser(name string, surname string, id uint) error
-	GetAllUsers() []User
+	GetAllUsers() ([]User, error)
 	GetUserById(id string) []User
 	UpdateUser(id string, user User) []User
 	DeleteUser(id string)
@@ -23,18 +21,14 @@ func New(db DB) *Service {
 func (svc *Service) CreateUser(user *User) error {
 	err := svc.db.CreateUser(user.Name, user.Surname, user.Id)
 
-	if err != nil {
-		fmt.Println("Create user error", err)
-	}
-
-	return nil
+	return err
 }
 
-func (svc *Service) GetAllUsers() []User {
+func (svc *Service) GetAllUsers() ([]User, error) {
 
-	posts := svc.db.GetAllUsers()
+	posts, err := svc.db.GetAllUsers()
 
-	return posts
+	return posts, err
 }
 
 func (svc *Service) GetUserById(id string) []User {

@@ -23,7 +23,7 @@ type (
 
 type Service interface {
 	CreateUser(user *service.User) error
-	GetAllUsers() []service.User
+	GetAllUsers() ([]service.User, error)
 	GetUserById(id string) []service.User
 	UpdateUser(id string, user *service.User) []service.User
 	DeleteUser(id string)

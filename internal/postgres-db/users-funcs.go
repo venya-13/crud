@@ -23,14 +23,18 @@ func (db *DB) CreateUser(name string, surname string, id uint) error {
 
 }
 
-func (db *DB) GetAllUsers() []service.User {
+func (db *DB) GetAllUsers() ([]service.User, error) {
 
 	var posts []service.User
-	db.db.Find(&posts)
+	errorCheck := db.db.Find(&posts)
 
 	fmt.Println(posts)
 
-	return posts
+	if errorCheck.Error != nil {
+		return posts, errorCheck.Error
+	}
+
+	return posts, nil
 
 }
 

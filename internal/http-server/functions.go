@@ -19,29 +19,38 @@ func (s *Server) CreateUser(ginContext *gin.Context) {
 
 	ginContext.Bind(&body)
 
-	err := s.svc.CreateUser(&service.User{
-		Id:      body.Id,
-		Name:    body.Name,
-		Surname: body.Surname,
-	})
+	if body.Id != 0 && body.Name != "" {
+		err := s.svc.CreateUser(&service.User{
+			Id:      body.Id,
+			Name:    body.Name,
+			Surname: body.Surname,
+		})
 
-	if err != nil {
-		log.Println("CreateUser: database error")
+		if err != nil {
+			log.Fatal("CreateUser: from http to server error:", err)
+		}
+
+		user := models.User{
+			Id:      body.Id,
+			Name:    body.Name,
+			Surname: body.Surname,
+		}
+
+		post = models.User(user)
+		ginContext.JSON(200, gin.H{"post": post})
+	} else {
+		log.Println("User body is empty")
 	}
 
-	user := models.User{
-		Id:      body.Id,
-		Name:    body.Name,
-		Surname: body.Surname,
-	}
-
-	post = models.User(user)
-	ginContext.JSON(200, gin.H{"post": post})
 }
 
 func (s *Server) GetAllUsers(ginContext *gin.Context) {
 	var posts []models.User
-	users := s.svc.GetAllUsers()
+	users, err := s.svc.GetAllUsers()
+
+	if err != nil {
+		log.Fatal("GetAllUsers: from http to server error:", err)
+	}
 
 	for _, user := range users {
 		posts = append(posts, models.User{
