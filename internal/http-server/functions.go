@@ -11,32 +11,36 @@ import (
 func (s *Server) CreateUser(ginContext *gin.Context) {
 	var post models.User
 
-	var body struct {
-		Id      uint
-		Name    string
-		Surname string
+	// var body struct {
+	// 	Id      uint
+	// 	Name    string
+	// 	Surname string
+	// }
+
+	if err := ginContext.BindJSON(&post); err != nil {
+		log.Fatal(err)
 	}
 
-	ginContext.Bind(&body)
+	//ginContext.Bind(&post)
 
-	if body.Id != 0 && body.Name != "" {
+	if post.Id != 0 && post.Name != "" {
 		err := s.svc.CreateUser(&service.User{
-			Id:      body.Id,
-			Name:    body.Name,
-			Surname: body.Surname,
+			Id:      post.Id,
+			Name:    post.Name,
+			Surname: post.Surname,
 		})
 
 		if err != nil {
 			log.Fatal("CreateUser: from http to server error:", err)
 		}
 
-		user := models.User{
-			Id:      body.Id,
-			Name:    body.Name,
-			Surname: body.Surname,
-		}
+		// user := models.User{
+		// 	Id:      post.Id,
+		// 	Name:    post.Name,
+		// 	Surname: post.Surname,
+		// }
 
-		post = models.User(user)
+		//post = models.User(user)
 		ginContext.JSON(200, gin.H{"post": post})
 	} else {
 		log.Println("User body is empty")

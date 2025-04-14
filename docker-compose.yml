@@ -1,25 +1,20 @@
 services:
-  app:
-    image: golang:1.24-alpine
-    container_name: golang_app
-    working_dir: /app
-    volumes:
-      - .:/app
-    ports:
-      - '3000:3000'
-    command: ['go', 'run', 'main.go']
-
   db:
     image: postgres:15
-    container_name: postgres_db
+    restart: always
     environment:
-      POSTGRES_USER: user
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: pass
-      POSTGRES_DB: crud_db
+      POSTGRES_DB: postgres
     ports:
-      - '5431:5432'
-    volumes:
-      - db_data:/var/lib/postgresql/data
+      - '5432:5432'
 
-volumes:
-  db_data:
+  app:
+    build: .
+    ports:
+      - '3000:3000'
+    depends_on:
+      - db
+    environment:
+      DB_URL: postgres://postgres:pass@db:5432/postgres?sslmode=disable # строка подключения
+      HTTP_SERVER_PORT: 3000
