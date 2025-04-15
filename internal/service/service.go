@@ -1,5 +1,7 @@
 package service
 
+import "fmt"
+
 type Service struct {
 	db DB
 }
@@ -7,9 +9,9 @@ type Service struct {
 type DB interface {
 	CreateUser(name string, surname string, id uint) error
 	GetAllUsers() ([]User, error)
-	GetUserById(id string) []User
-	UpdateUser(id string, user User) []User
-	DeleteUser(id string)
+	GetUserById(id string) ([]User, error)
+	UpdateUser(id string, user User) ([]User, error)
+	DeleteUser(id string) error
 }
 
 func New(db DB) *Service {
@@ -21,29 +23,39 @@ func New(db DB) *Service {
 func (svc *Service) CreateUser(user *User) error {
 	err := svc.db.CreateUser(user.Name, user.Surname, user.Id)
 
-	return err
+	errFinal := fmt.Errorf("create user error %w", err)
+
+	return errFinal
 }
 
 func (svc *Service) GetAllUsers() ([]User, error) {
 
 	posts, err := svc.db.GetAllUsers()
 
-	return posts, err
+	errFinal := fmt.Errorf("create user error %w", err)
+
+	return posts, errFinal
 }
 
-func (svc *Service) GetUserById(id string) []User {
-	userById := svc.db.GetUserById(id)
+func (svc *Service) GetUserById(id string) ([]User, error) {
+	userById, err := svc.db.GetUserById(id)
 
-	return userById
+	errFinal := fmt.Errorf("create user error %w", err)
+
+	return userById, errFinal
 }
 
-func (svc *Service) UpdateUser(id string, user *User) []User {
+func (svc *Service) UpdateUser(id string, user *User) ([]User, error) {
 
-	updatedUser := svc.db.UpdateUser(id, *user)
+	updatedUser, err := svc.db.UpdateUser(id, *user)
 
-	return updatedUser
+	errFinal := fmt.Errorf("create user error %w", err)
+
+	return updatedUser, errFinal
 }
 
-func (svc *Service) DeleteUser(id string) {
-	svc.db.DeleteUser(id)
+func (svc *Service) DeleteUser(id string) error {
+	err := svc.db.DeleteUser(id)
+	errFinal := fmt.Errorf("create user error %w", err)
+	return errFinal
 }

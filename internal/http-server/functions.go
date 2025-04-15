@@ -3,7 +3,7 @@ package httpserver
 import (
 	"crud/internal/http-server/models"
 	"crud/internal/service"
-	"log"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -11,17 +11,9 @@ import (
 func (s *Server) CreateUser(ginContext *gin.Context) {
 	var post models.User
 
-	// var body struct {
-	// 	Id      uint
-	// 	Name    string
-	// 	Surname string
-	// }
-
 	if err := ginContext.BindJSON(&post); err != nil {
-		log.Fatal(err)
+		fmt.Println("Bind error", err)
 	}
-
-	//ginContext.Bind(&post)
 
 	if post.Id != 0 && post.Name != "" {
 		err := s.svc.CreateUser(&service.User{
@@ -31,19 +23,13 @@ func (s *Server) CreateUser(ginContext *gin.Context) {
 		})
 
 		if err != nil {
-			log.Fatal("CreateUser: from http to server error:", err)
+			fmt.Println("CreateUser: from http to server error:", err)
 		}
 
-		// user := models.User{
-		// 	Id:      post.Id,
-		// 	Name:    post.Name,
-		// 	Surname: post.Surname,
-		// }
-
-		//post = models.User(user)
 		ginContext.JSON(200, gin.H{"post": post})
 	} else {
-		log.Println("User body is empty")
+		ginContext.JSON(400, gin.H{"Error": post})
+
 	}
 
 }
@@ -53,7 +39,8 @@ func (s *Server) GetAllUsers(ginContext *gin.Context) {
 	users, err := s.svc.GetAllUsers()
 
 	if err != nil {
-		log.Fatal("GetAllUsers: from http to server error:", err)
+		fmt.Println("GetAllUsers: from http to server error:", err)
+		ginContext.JSON(500, gin.H{"Failed to get user from database": "Http error"})
 	}
 
 	for _, user := range users {
@@ -74,7 +61,12 @@ func (s *Server) GetUserById(ginContext *gin.Context) {
 
 	id := ginContext.Param("id")
 
-	users := s.svc.GetUserById(id)
+	users, err := s.svc.GetUserById(id)
+
+	if err != nil {
+		fmt.Println("GetUserById: from http to server error:", err)
+		ginContext.JSON(500, gin.H{"Failed to get user from database": "Http error"})
+	}
 
 	for _, user := range users {
 		post = append(post, models.User{
@@ -100,13 +92,21 @@ func (s *Server) UpdateUser(ginContext *gin.Context) {
 		Surname string
 	}
 
-	ginContext.Bind(&body)
+	if err := ginContext.BindJSON(&body); err != nil {
+		fmt.Println("Bind error", err)
+	}
 
-	updatedUser := s.svc.UpdateUser(id, &service.User{
+	updatedUser, err := s.svc.UpdateUser(id, &service.User{
 		Id:      body.Id,
 		Name:    body.Name,
 		Surname: body.Surname,
 	})
+
+	if err != nil {
+		fmt.Println("UpdateUser: from http to server error:", err)
+		ginContext.JSON(500, gin.H{"Failed to update user from database": "Http error"})
+
+	}
 
 	for _, user := range updatedUser {
 		post = append(post, models.User{
@@ -122,7 +122,13 @@ func (s *Server) UpdateUser(ginContext *gin.Context) {
 func (s *Server) DeleteUser(ginContext *gin.Context) {
 	id := ginContext.Param("id")
 
-	s.svc.DeleteUser(id)
+	err := s.svc.DeleteUser(id)
 
-	ginContext.Status(200)
+	if err != nil {
+		fmt.Println("DeleteUser:Failed to delete user error:", err)
+		ginContext.JSON(500, gin.H{"Failed to delete user from database": "Http error"})
+	} else {
+		ginContext.Status(200)
+	}
+
 }

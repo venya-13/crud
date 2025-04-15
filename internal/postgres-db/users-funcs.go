@@ -38,28 +38,42 @@ func (db *DB) GetAllUsers() ([]service.User, error) {
 
 }
 
-func (db *DB) GetUserById(id string) []service.User {
+func (db *DB) GetUserById(id string) ([]service.User, error) {
 
 	var post []service.User
-	db.db.First(&post, id)
+	errorCheck := db.db.First(&post, id)
+
+	if errorCheck.Error != nil {
+		return post, errorCheck.Error
+	}
 
 	fmt.Println(post)
 
-	return post
+	return post, nil
 
 }
 
-func (db *DB) UpdateUser(id string, user service.User) []service.User {
+func (db *DB) UpdateUser(id string, user service.User) ([]service.User, error) {
 
 	var post []service.User
 	db.db.First(&post, id)
 
-	db.db.Model(&post).Updates(user)
+	errorCheck := db.db.Model(&post).Updates(user)
 
-	return post
+	if errorCheck.Error != nil {
+		return post, errorCheck.Error
+	}
+
+	return post, nil
 }
 
-func (db *DB) DeleteUser(id string) {
+func (db *DB) DeleteUser(id string) error {
 
-	db.db.Delete(&service.User{}, id)
+	errorCheck := db.db.Delete(&service.User{}, id)
+
+	if errorCheck.Error != nil {
+		return errorCheck.Error
+	}
+
+	return nil
 }

@@ -13,7 +13,7 @@ type (
 	}
 	Config struct {
 		Port  string `envconfig:"HTTP_SERVER_PORT" default:"3000"`
-		DBUrl string `envconfig:"DB_URL" default:"host=db user=postgres password=pass dbname=postgres port=5432 sslmode=disable"`
+		DBUrl string `envconfig:"DB_URL" default:"host=localhost user=postgres password=pass dbname=postgres port=5431 sslmode=disable"`
 	}
 )
 

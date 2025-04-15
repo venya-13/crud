@@ -24,9 +24,9 @@ type (
 type Service interface {
 	CreateUser(user *service.User) error
 	GetAllUsers() ([]service.User, error)
-	GetUserById(id string) []service.User
-	UpdateUser(id string, user *service.User) []service.User
-	DeleteUser(id string)
+	GetUserById(id string) ([]service.User, error)
+	UpdateUser(id string, user *service.User) ([]service.User, error)
+	DeleteUser(id string) error
 }
 
 func New(cfg Config, svc Service) *Server {
