@@ -41,6 +41,7 @@ func (s *Server) GetAllUsers(ginContext *gin.Context) {
 	if err != nil {
 		fmt.Println("GetAllUsers: from http to server error:", err)
 		ginContext.JSON(500, gin.H{"Failed to get user from database": "Http error"})
+		return
 	}
 
 	for _, user := range users {
@@ -127,8 +128,9 @@ func (s *Server) DeleteUser(ginContext *gin.Context) {
 	if err != nil {
 		fmt.Println("DeleteUser:Failed to delete user error:", err)
 		ginContext.JSON(500, gin.H{"Failed to delete user from database": "Http error"})
-	} else {
-		ginContext.Status(200)
+		return
 	}
+
+	ginContext.Status(200)
 
 }

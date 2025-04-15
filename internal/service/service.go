@@ -23,39 +23,47 @@ func New(db DB) *Service {
 func (svc *Service) CreateUser(user *User) error {
 	err := svc.db.CreateUser(user.Name, user.Surname, user.Id)
 
-	errFinal := fmt.Errorf("create user error %w", err)
-
-	return errFinal
+	if errFinal := fmt.Errorf("create user error %w", err); err != nil {
+		return errFinal
+	}
+	return nil
 }
 
 func (svc *Service) GetAllUsers() ([]User, error) {
 
 	posts, err := svc.db.GetAllUsers()
 
-	errFinal := fmt.Errorf("create user error %w", err)
-
-	return posts, errFinal
+	if errFinal := fmt.Errorf("get all users error %w", err); err != nil {
+		return posts, errFinal
+	}
+	return posts, nil
 }
 
 func (svc *Service) GetUserById(id string) ([]User, error) {
 	userById, err := svc.db.GetUserById(id)
 
-	errFinal := fmt.Errorf("create user error %w", err)
-
-	return userById, errFinal
+	if errFinal := fmt.Errorf("get user by id error %w", err); err != nil {
+		return userById, errFinal
+	}
+	return userById, nil
 }
 
 func (svc *Service) UpdateUser(id string, user *User) ([]User, error) {
 
 	updatedUser, err := svc.db.UpdateUser(id, *user)
 
-	errFinal := fmt.Errorf("create user error %w", err)
+	if errFinal := fmt.Errorf("update user error %w", err); err != nil {
+		return updatedUser, errFinal
+	}
+	return updatedUser, nil
 
-	return updatedUser, errFinal
 }
 
 func (svc *Service) DeleteUser(id string) error {
 	err := svc.db.DeleteUser(id)
-	errFinal := fmt.Errorf("create user error %w", err)
-	return errFinal
+
+	if errFinal := fmt.Errorf("delete user error %w", err); err != nil {
+		return errFinal
+	}
+	return nil
 }
