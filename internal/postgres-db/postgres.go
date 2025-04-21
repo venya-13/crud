@@ -28,13 +28,6 @@ func New(config Config) (*DB, error) {
 		os.Exit(1)
 	}
 
-	//defer db.Close()
-
-	// db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	// if err != nil {
-	// 	return nil, fmt.Errorf("failed to connect to database: %w", err)
-	// }
-
 	return &DB{
 		db: db,
 	}, nil
