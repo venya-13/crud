@@ -23,7 +23,7 @@ func New(db DB) *Service {
 func (svc *Service) CreateUser(user *User) error {
 	err := svc.db.CreateUser(user.Name, user.Surname, user.Id)
 
-	if errFinal := fmt.Errorf("create user error %w", err); err != nil {
+	if errFinal := fmt.Errorf("create user database error %w", err); err != nil {
 		return errFinal
 	}
 	return nil

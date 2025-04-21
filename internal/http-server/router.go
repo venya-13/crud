@@ -36,11 +36,11 @@ func New(cfg Config, svc Service) *Server {
 		svc:    svc,
 	}
 
-	s.router.POST("/posts", s.CreateUser)
-	s.router.PUT("/posts/:id", s.UpdateUser)
-	s.router.GET("/posts", s.GetAllUsers)
-	s.router.GET("/posts/:id", s.GetUserById)
-	s.router.DELETE("/posts/:id", s.DeleteUser)
+	s.router.POST("/create-user", s.CreateUser)
+	s.router.PUT("/update-user/:id", s.UpdateUser)
+	s.router.GET("/users", s.GetAllUsers)
+	s.router.GET("/users/:id", s.GetUserById)
+	s.router.DELETE("/users/:id", s.DeleteUser)
 
 	return &s
 }
