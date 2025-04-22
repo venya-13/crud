@@ -1,7 +1,7 @@
 package service
 
 type User struct {
-	Id      uint
-	Name    string
-	Surname string
+	Id      uint   `note:"column: id"`
+	Name    string `note:"column: name"`
+	Surname string `note:"column: surname"`
 }

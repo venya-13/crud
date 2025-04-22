@@ -32,3 +32,7 @@ func New(config Config) (*DB, error) {
 		db: db,
 	}, nil
 }
+
+func dbClose(db *pgxpool.Pool) {
+	db.Close()
+}
