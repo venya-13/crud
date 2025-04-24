@@ -1,8 +1,8 @@
 package main
 
 import (
-	httpserver "crud/internal/http-server"
-	postgresdb "crud/internal/postgres-db"
+	httpserver "crud/internal/httpserver"
+	postgresdb "crud/internal/postgresdb"
 )
 
 type Config struct {

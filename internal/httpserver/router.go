@@ -22,11 +22,11 @@ type (
 )
 
 type Service interface {
-	CreateUser(user *service.User) error
+	CreateUser(user *service.User) (uint, error)
 	GetAllUsers() ([]service.User, error)
-	GetUserById(id string) []service.User
-	UpdateUser(id string, user *service.User) []service.User
-	DeleteUser(id string)
+	GetUserById(id string) ([]service.User, error)
+	UpdateUser(id string, user *service.User) ([]service.User, error)
+	DeleteUser(id string) error
 }
 
 func New(cfg Config, svc Service) *Server {
@@ -36,11 +36,11 @@ func New(cfg Config, svc Service) *Server {
 		svc:    svc,
 	}
 
-	s.router.POST("/posts", s.CreateUser)
-	s.router.PUT("/posts/:id", s.UpdateUser)
-	s.router.GET("/posts", s.GetAllUsers)
-	s.router.GET("/posts/:id", s.GetUserById)
-	s.router.DELETE("/posts/:id", s.DeleteUser)
+	s.router.POST("/create-user", s.CreateUser)
+	s.router.PUT("/update-user/:id", s.UpdateUser)
+	s.router.GET("/users", s.GetAllUsers)
+	s.router.GET("/users/:id", s.GetUserById)
+	s.router.DELETE("/users/:id", s.DeleteUser)
 
 	return &s
 }

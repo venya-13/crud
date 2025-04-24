@@ -1,8 +1,8 @@
 package main
 
 import (
-	httpserver "crud/internal/http-server"
-	postgresdb "crud/internal/postgres-db"
+	"crud/internal/httpserver"
+	"crud/internal/postgresdb"
 	"crud/internal/service"
 	"fmt"
 	"log"
@@ -25,6 +25,8 @@ func main() {
 		fmt.Println("Error connecting to database:", err)
 		os.Exit(1)
 	}
+
+	defer db.Close()
 
 	svc := service.New(db)
 
