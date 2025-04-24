@@ -5,10 +5,19 @@ import (
 	"crud/internal/service"
 )
 
-func (db *DB) CreateUser(name, surname string) (error, int) {
-	query := `INSERT INTO users (id, name, surname) VALUES ($1, $2, $3)`
-	_, err := db.db.Exec(context.Background(), query, id, name, surname)
-	return err
+func (db *DB) CreateUser(name, surname string) (uint, error) {
+	var id uint
+	query := `
+    INSERT INTO users (name, surname)
+    VALUES ($1, $2)
+    RETURNING id
+  `
+	err := db.db.QueryRow(context.Background(), query, name, surname).
+		Scan(&id)
+	if err != nil {
+		return 0, err
+	}
+	return id, nil
 }
 
 func (db *DB) GetAllUsers() ([]service.User, error) {

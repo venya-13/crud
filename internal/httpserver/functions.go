@@ -8,6 +8,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type User struct {
+	Id      uint   `json:"id"`
+	Name    string `json:"name"`
+	Surname string `json:"surname"`
+}
+
 func (s *Server) CreateUser(ginContext *gin.Context) {
 	var post User
 

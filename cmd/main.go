@@ -1,8 +1,8 @@
 package main
 
 import (
-	httpserver "crud/internal/httpserver"
-	postgresdb "crud/internal/postgres-db"
+	"crud/internal/httpserver"
+	"crud/internal/postgresdb"
 	"crud/internal/service"
 	"fmt"
 	"log"
@@ -21,7 +21,7 @@ func main() {
 
 	db, err := postgresdb.New(cfg.Postgres)
 
-	defer db.Close()
+	//defer db.Close()
 
 	if err != nil {
 		fmt.Println("Error connecting to database:", err)
