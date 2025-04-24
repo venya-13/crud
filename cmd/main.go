@@ -1,7 +1,7 @@
 package main
 
 import (
-	httpserver "crud/internal/http-server"
+	httpserver "crud/internal/httpserver"
 	postgresdb "crud/internal/postgres-db"
 	"crud/internal/service"
 	"fmt"

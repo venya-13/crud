@@ -15,12 +15,11 @@ func (s *Server) CreateUser(ginContext *gin.Context) {
 		log.Println("Bind error", err)
 	}
 
-	if post.Id == 0 && post.Name == "" {
+	if post.Name == "" {
 		ginContext.JSON(http.StatusBadRequest, gin.H{"Error": post})
 	}
 
-	err := s.svc.CreateUser(&service.User{
-		Id:      post.Id,
+	id, err := s.svc.CreateUser(&service.User{
 		Name:    post.Name,
 		Surname: post.Surname,
 	})
@@ -28,6 +27,8 @@ func (s *Server) CreateUser(ginContext *gin.Context) {
 	if err != nil {
 		log.Println("CreateUser: handling database error in http:", err)
 	}
+
+	post.Id = id
 
 	ginContext.JSON(http.StatusOK, gin.H{"post": post})
 

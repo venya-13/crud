@@ -5,7 +5,7 @@ import (
 	"crud/internal/service"
 )
 
-func (db *DB) CreateUser(name string, surname string, id uint) error {
+func (db *DB) CreateUser(name, surname string) (error, int) {
 	query := `INSERT INTO users (id, name, surname) VALUES ($1, $2, $3)`
 	_, err := db.db.Exec(context.Background(), query, id, name, surname)
 	return err
