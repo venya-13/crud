@@ -8,6 +8,8 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
+// Add config
+
 var (
 	ctx = context.Background()
 	rdb *redis.Client
