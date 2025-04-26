@@ -4,6 +4,7 @@ import "fmt"
 
 type Service struct {
 	db DB
+	r  Redis
 }
 
 type DB interface {
@@ -12,11 +13,19 @@ type DB interface {
 	GetUserById(id string) ([]User, error)
 	UpdateUser(id string, user User) ([]User, error)
 	DeleteUser(id string) error
+	Close()
 }
 
-func New(db DB) *Service {
+type Redis interface {
+	GetUserById(id string) (*User, error)
+	SaveUser(user *User) error
+	DeleteUpdateUser(id string) error
+}
+
+func New(db DB, r Redis) *Service {
 	return &Service{
 		db: db,
+		r:  r,
 	}
 }
 
