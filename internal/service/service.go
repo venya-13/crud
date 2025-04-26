@@ -49,11 +49,26 @@ func (svc *Service) GetAllUsers() ([]User, error) {
 }
 
 func (svc *Service) GetUserById(id string) ([]User, error) {
-	userById, err := svc.db.GetUserById(id)
+	if svc.r != nil {
 
+		user, err := svc.r.GetUserById(id)
+
+		if err == nil && user != nil {
+			return []User{*user}, nil
+		} else {
+			return nil, fmt.Errorf("get user by id error %w", err)
+		}
+	}
+
+	userById, err := svc.db.GetUserById(id)
 	if errFinal := fmt.Errorf("get user by id error %w", err); err != nil {
 		return userById, errFinal
 	}
+
+	if svc.r != nil && len(userById) > 0 {
+		_ = svc.r.SaveUser(&userById[0])
+	}
+
 	return userById, nil
 }
 
@@ -64,8 +79,12 @@ func (svc *Service) UpdateUser(id string, user *User) ([]User, error) {
 	if errFinal := fmt.Errorf("update user error %w", err); err != nil {
 		return updatedUser, errFinal
 	}
-	return updatedUser, nil
 
+	if svc.r != nil {
+		_ = svc.r.DeleteUpdateUser(id)
+	}
+
+	return updatedUser, nil
 }
 
 func (svc *Service) DeleteUser(id string) error {
@@ -74,5 +93,10 @@ func (svc *Service) DeleteUser(id string) error {
 	if errFinal := fmt.Errorf("delete user error %w", err); err != nil {
 		return errFinal
 	}
+
+	if svc.r != nil {
+		_ = svc.r.DeleteUpdateUser(id)
+	}
+
 	return nil
 }

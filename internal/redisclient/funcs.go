@@ -2,20 +2,38 @@ package redisclient
 
 import (
 	"crud/internal/service"
+	"encoding/json"
+	"fmt"
+	"time"
 )
 
 func (r *Redis) GetUserById(id string) (*service.User, error) {
-	// Implement the logic to get the user by ID from Redis
-	return nil, nil
+	key := fmt.Sprintf("user:%s", id)
+	val, err := r.client.Get(r.context, key).Result()
+	if err != nil {
+		return nil, fmt.Errorf("could not get user from Redis: %w", err)
+	}
 
+	var user service.User
+	if err := json.Unmarshal([]byte(val), &user); err != nil {
+		return nil, err
+	}
+
+	return &user, nil
 }
 
 func (r *Redis) SaveUser(user *service.User) error {
-	// Implement the logic to save the user in Redis
-	return nil
+	key := fmt.Sprintf("user:%s", user.Id)
+
+	bytes, err := json.Marshal(user)
+	if err != nil {
+		return fmt.Errorf("could not marshal user: %w", err)
+	}
+
+	return r.client.Set(r.context, key, bytes, 10*time.Minute).Err()
 }
 
 func (r *Redis) DeleteUpdateUser(id string) error {
-	// Implement the logic to delete or update the user in Redis
-	return nil
+	key := fmt.Sprintf("user:%s", id)
+	return r.client.Del(r.context, key).Err()
 }
