@@ -50,13 +50,14 @@ func (svc *Service) GetAllUsers() ([]User, error) {
 
 func (svc *Service) GetUserById(id string) ([]User, error) {
 	if svc.r != nil {
-
 		user, err := svc.r.GetUserById(id)
 
-		if err == nil && user != nil {
+		if err != nil {
+			return nil, fmt.Errorf("get user by id from Redis error %w", err)
+		}
+
+		if user != nil {
 			return []User{*user}, nil
-		} else {
-			return nil, fmt.Errorf("get user by id error %w", err)
 		}
 	}
 
