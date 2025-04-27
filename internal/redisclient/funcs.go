@@ -3,6 +3,7 @@ package redisclient
 import (
 	"crud/internal/service"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"time"
 
@@ -12,9 +13,11 @@ import (
 func (r *Redis) GetUserById(id string) (*service.User, error) {
 	key := fmt.Sprintf("user:%s", id)
 	val, err := r.client.Get(r.context, key).Result()
-	if err == redis.Nil {
+	if errors.Is(err, redis.Nil) {
 		return nil, nil
-	} else if err != nil {
+	}
+
+	if err != nil {
 		return nil, fmt.Errorf("could not get user from Redis: %w", err)
 	}
 

@@ -21,6 +21,8 @@ type Redis struct {
 	client  *redis.Client
 }
 
+type NoopRedis struct{}
+
 type Service interface {
 	GetUserById(id string) (*service.User, error)
 	SaveUser(user *service.User) error
@@ -34,7 +36,7 @@ func InitRedis() *Redis {
 		DB:       0, // default DB
 	})
 
-	r := Redis{
+	redis := Redis{
 		port:    6379,
 		context: ctx,
 		client:  rdb,
@@ -46,5 +48,5 @@ func InitRedis() *Redis {
 	}
 	log.Printf("Connected to Redis: %s", pong)
 
-	return &r
+	return &redis
 }
