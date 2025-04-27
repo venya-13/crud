@@ -24,15 +24,15 @@ type Redis interface {
 	DeleteUpdateUser(id string) error
 }
 
-func New(db DB, r Redis) *Service {
+func New(db DB, redis Redis) *Service {
 
-	if r == nil {
-		r = &NoopRedis{}
+	if redis == nil {
+		redis = &NoopRedis{}
 	}
 
 	return &Service{
 		db:    db,
-		redis: r,
+		redis: redis,
 	}
 }
 
