@@ -37,9 +37,17 @@ func (r *Redis) SaveUser(user *service.User) error {
 		return fmt.Errorf("could not marshal user: %w", err)
 	}
 
-	err = r.client.Set(r.context, key, bytes, 10*time.Minute).Err()
+	tx := r.client.TxPipeline()
+
+	set := tx.Set(r.context, key, bytes, 10*time.Minute)
+	_, err = tx.Exec(r.context)
+
 	if err != nil {
-		return fmt.Errorf("could not save user to Redis: %w", err)
+		return fmt.Errorf("could not save user to redis(transaction failed): %w", err)
+	}
+
+	if set.Err() != nil {
+		return fmt.Errorf("set command fails redis: %w", set.Err())
 	}
 
 	return nil
@@ -48,9 +56,17 @@ func (r *Redis) SaveUser(user *service.User) error {
 func (r *Redis) DeleteUpdateUser(id string) error {
 	key := fmt.Sprintf("user:%s", id)
 
-	err := r.client.Del(r.context, key).Err()
+	tx := r.client.TxPipeline()
+
+	del := tx.Del(r.context, key)
+	_, err := tx.Exec(r.context)
+
 	if err != nil {
-		return fmt.Errorf("could not delete user from Redis: %w", err)
+		return fmt.Errorf("could not delete user from redis(transaction failed): %w", err)
+	}
+
+	if del.Err() != nil {
+		return fmt.Errorf("delete command fails redis: %w", del.Err())
 	}
 
 	return nil
