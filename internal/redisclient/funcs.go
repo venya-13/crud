@@ -71,3 +71,33 @@ func (r *Redis) DeleteUpdateUser(id string) error {
 
 	return nil
 }
+
+func (r *Redis) GetAllUsers() ([]service.User, error) {
+	val, err := r.client.Get(r.context, "users:all").Result()
+	if errors.Is(err, redis.Nil) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, fmt.Errorf("get all users from redis failed: %w", err)
+	}
+
+	var users []service.User
+	if err := json.Unmarshal([]byte(val), &users); err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
+
+func (r *Redis) SaveAllUsers(users []service.User) error {
+	bytes, err := json.Marshal(users)
+	if err != nil {
+		return fmt.Errorf("marshal users for redis failed: %w", err)
+	}
+
+	err = r.client.Set(r.context, "users:all", bytes, 10*time.Minute).Err()
+	if err != nil {
+		return fmt.Errorf("set all users to redis failed: %w", err)
+	}
+	return nil
+}

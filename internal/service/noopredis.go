@@ -13,3 +13,11 @@ func (n *NoopRedis) SaveUser(user *User) error {
 func (n *NoopRedis) DeleteUpdateUser(id string) error {
 	return nil
 }
+
+func (n *NoopRedis) GetAllUsers() ([]User, error) {
+	return nil, nil
+}
+
+func (n *NoopRedis) SaveAllUsers(users []User) error {
+	return nil
+}

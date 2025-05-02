@@ -22,6 +22,8 @@ type Redis interface {
 	GetUserById(id string) (*User, error)
 	SaveUser(user *User) error
 	DeleteUpdateUser(id string) error
+	GetAllUsers() ([]User, error)
+	SaveAllUsers([]User) error
 }
 
 func New(db DB, redis Redis) *Service {
@@ -47,12 +49,44 @@ func (svc *Service) CreateUser(user *User) (uint, error) {
 
 func (svc *Service) GetAllUsers() ([]User, error) {
 
-	posts, err := svc.db.GetAllUsers()
-
+	cachedUsers, err := svc.redis.GetAllUsers()
 	if err != nil {
-		return posts, fmt.Errorf("get all users error %w", err)
+		return nil, fmt.Errorf("get users from redis error %w", err)
 	}
-	return posts, nil
+
+	dbUsers, err := svc.db.GetAllUsers()
+	if err != nil {
+		return nil, fmt.Errorf("get users from db error %w", err)
+	}
+
+	// if redis is empty, use db
+	if len(cachedUsers) == 0 {
+		_ = svc.redis.SaveAllUsers(dbUsers)
+		return dbUsers, nil
+	}
+
+	dbIsNewer := false
+
+	cacheMap := make(map[uint]User)
+
+	for _, cachedUser := range cachedUsers {
+		cacheMap[cachedUser.Id] = cachedUser
+	}
+
+	for _, dbUser := range dbUsers {
+		if cachedUsers, ok := cacheMap[dbUser.Id]; !ok || dbUser.UpdatedAt.After(cachedUsers.UpdatedAt) {
+			dbIsNewer = true
+			break
+		}
+	}
+
+	if dbIsNewer {
+		_ = svc.redis.SaveAllUsers(dbUsers)
+		return dbUsers, nil
+
+	}
+
+	return cachedUsers, nil
 }
 
 func (svc *Service) GetUserById(id string) ([]User, error) {
