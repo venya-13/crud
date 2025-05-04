@@ -4,14 +4,16 @@ import (
 	"crud/internal/service"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 type User struct {
-	Id      uint   `json:"id"`
-	Name    string `json:"name"`
-	Surname string `json:"surname"`
+	Id        uint      `json:"id"`
+	Name      string    `json:"name"`
+	Surname   string    `json:"surname"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 func (s *Server) CreateUser(ginContext *gin.Context) {

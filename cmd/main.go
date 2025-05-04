@@ -3,6 +3,7 @@ package main
 import (
 	"crud/internal/httpserver"
 	"crud/internal/postgresdb"
+	"crud/internal/redisclient"
 	"crud/internal/service"
 	"fmt"
 	"log"
@@ -19,6 +20,8 @@ func main() {
 		log.Fatalf("failed to load config: %v", err)
 	}
 
+	redis := redisclient.InitRedis()
+
 	db, err := postgresdb.New(cfg.Postgres)
 
 	if err != nil {
@@ -28,12 +31,11 @@ func main() {
 
 	defer db.Close()
 
-	svc := service.New(db)
+	svc := service.New(db, redis)
 
 	httpServer := httpserver.New(cfg.HttpServer, svc)
 
 	if err := httpServer.Run(); err != nil {
 		log.Fatalf("Failed to run server: %v", err)
 	}
-
 }
