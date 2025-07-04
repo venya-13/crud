@@ -21,8 +21,6 @@ type Redis struct {
 	client  *redis.Client
 }
 
-type NoopRedis struct{}
-
 type Service interface {
 	GetUserById(id string) (*service.User, error)
 	SaveUser(user *service.User) error

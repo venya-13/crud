@@ -13,6 +13,8 @@ type User struct {
 	Id        uint      `json:"id"`
 	Name      string    `json:"name"`
 	Surname   string    `json:"surname"`
+	Email     string    `json:"email"`
+	Age       int       `json:"age"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
@@ -30,6 +32,8 @@ func (s *Server) CreateUser(ginContext *gin.Context) {
 	id, err := s.svc.CreateUser(&service.User{
 		Name:    post.Name,
 		Surname: post.Surname,
+		Email:   post.Email,
+		Age:     post.Age,
 	})
 
 	if err != nil {
@@ -57,6 +61,8 @@ func (s *Server) GetAllUsers(ginContext *gin.Context) {
 			Id:      user.Id,
 			Name:    user.Name,
 			Surname: user.Surname,
+			Email:   user.Email,
+			Age:     user.Age,
 		})
 	}
 
@@ -82,6 +88,8 @@ func (s *Server) GetUserById(ginContext *gin.Context) {
 			Id:      user.Id,
 			Name:    user.Name,
 			Surname: user.Surname,
+			Email:   user.Email,
+			Age:     user.Age,
 		})
 	}
 
@@ -99,6 +107,8 @@ func (s *Server) UpdateUser(ginContext *gin.Context) {
 		Id      uint
 		Name    string
 		Surname string
+		Email   string
+		Age     int
 	}
 
 	if err := ginContext.BindJSON(&body); err != nil {
@@ -109,6 +119,8 @@ func (s *Server) UpdateUser(ginContext *gin.Context) {
 		Id:      body.Id,
 		Name:    body.Name,
 		Surname: body.Surname,
+		Email:   body.Email,
+		Age:     body.Age,
 	})
 
 	if err != nil {
@@ -122,6 +134,8 @@ func (s *Server) UpdateUser(ginContext *gin.Context) {
 			Id:      user.Id,
 			Name:    user.Name,
 			Surname: user.Surname,
+			Email:   user.Email,
+			Age:     user.Age,
 		})
 
 		ginContext.JSON(http.StatusOK, gin.H{"post": post})
