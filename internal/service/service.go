@@ -10,7 +10,7 @@ type Service struct {
 }
 
 type DB interface {
-	CreateUser(name string, surname string) (uint, error)
+	CreateUser(name, surname, email string, age int) (uint, error)
 	GetAllUsers() ([]User, error)
 	GetUserById(id string) ([]User, error)
 	UpdateUser(id string, user User) ([]User, error)
@@ -39,7 +39,7 @@ func New(db DB, redis Redis) *Service {
 }
 
 func (svc *Service) CreateUser(user *User) (uint, error) {
-	id, err := svc.db.CreateUser(user.Name, user.Surname)
+	id, err := svc.db.CreateUser(user.Name, user.Surname, user.Email, user.Age)
 
 	if err != nil {
 		return 0, fmt.Errorf("create user database error %w", err)
