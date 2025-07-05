@@ -11,6 +11,7 @@ type Service struct {
 
 type DB interface {
 	CreateUser(name, surname, email string, age int) (uint, error)
+	CreateFamily(familyName string) (uint, error)
 	GetAllUsers() ([]User, error)
 	GetUserById(id string) ([]User, error)
 	UpdateUser(id string, user User) ([]User, error)
@@ -44,6 +45,18 @@ func (svc *Service) CreateUser(user *User) (uint, error) {
 	if err != nil {
 		return 0, fmt.Errorf("create user database error %w", err)
 	}
+	return id, nil
+}
+
+func (svc *Service) CreateFamily(familyName string) (uint, error) {
+
+	// add cache check here
+
+	id, err := svc.db.CreateFamily(familyName)
+	if err != nil {
+		return 0, fmt.Errorf("create family database error %w", err)
+	}
+
 	return id, nil
 }
 

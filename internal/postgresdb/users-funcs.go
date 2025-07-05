@@ -3,6 +3,7 @@ package postgresdb
 import (
 	"context"
 	"crud/internal/service"
+	"fmt"
 )
 
 func (db *DB) CreateUser(name, surname, email string, age int) (uint, error) {
@@ -20,6 +21,33 @@ func (db *DB) CreateUser(name, surname, email string, age int) (uint, error) {
 	}
 	return id, nil
 }
+
+func (db *DB) CreateFamily(familyName string) (uint, error) {
+
+	var id uint
+
+	query := `INSERT INTO families (name) VALUES ($1) RETURNING id`
+	err := db.db.QueryRow(context.Background(), query, familyName).Scan(&id)
+	if err != nil {
+		return 0, err
+	}
+
+	tableName := fmt.Sprintf("family_%s", familyName)
+	createTableSQL := fmt.Sprintf(`
+		CREATE TABLE IF NOT EXISTS %s (
+			id SERIAL PRIMARY KEY,
+			name VARCHAR(80) NOT NULL
+		);`, tableName)
+
+	_, err = db.db.Exec(context.Background(), createTableSQL)
+	if err != nil {
+		return 0, err
+	}
+
+	return id, nil
+}
+
+// Don't forget to create famillies table in database
 
 func (db *DB) GetAllUsers() ([]service.User, error) {
 	rows, err := db.db.Query(context.Background(), `SELECT id, name, surname, email, age, updated_at FROM users`)
@@ -72,6 +100,9 @@ func (db *DB) UpdateUser(id string, user service.User) ([]service.User, error) {
 	}
 
 	return []service.User{updatedUser}, nil
+
+	// The same question as above:
+	// Can you return single user instead of array?
 }
 
 func (db *DB) DeleteUser(id string) error {

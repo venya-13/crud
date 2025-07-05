@@ -18,6 +18,15 @@ type User struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+type Family struct {
+	Id   uint   `json:"id"`
+	Name string `json:"name"`
+}
+
+// add password field to User struct
+// Needed functions Register, Login.
+// Add user to family
+
 func (s *Server) CreateUser(ginContext *gin.Context) {
 	var post User
 
@@ -44,6 +53,31 @@ func (s *Server) CreateUser(ginContext *gin.Context) {
 
 	ginContext.JSON(http.StatusOK, gin.H{"post": post})
 
+}
+
+func (s *Server) CreateFamily(ginContext *gin.Context) {
+	var family Family
+
+	if err := ginContext.BindJSON(&family); err != nil {
+		log.Println("Bind error", err)
+	}
+
+	if family.Name == "" {
+		ginContext.JSON(http.StatusBadRequest, gin.H{"Error, family name field is empty ": family})
+		return
+	}
+
+	// Check if family name already exists
+
+	id, err := s.svc.CreateFamily(family.Name)
+	if err != nil {
+		log.Println("CreateFamily: handling database error in http:", err)
+		ginContext.JSON(http.StatusInternalServerError, gin.H{"Failed to create family": "Http error"})
+		return
+	}
+
+	family.Id = id
+	ginContext.JSON(http.StatusOK, gin.H{"Family: ": family})
 }
 
 func (s *Server) GetAllUsers(ginContext *gin.Context) {
