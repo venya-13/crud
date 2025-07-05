@@ -33,7 +33,6 @@ type FamiltMember struct {
 
 // add password field to User struct
 // Needed functions Register, Login.
-// Add user to family
 
 func (s *Server) CreateUser(ginContext *gin.Context) {
 	var post User
