@@ -27,6 +27,8 @@ type Service interface {
 	GetUserById(id string) ([]service.User, error)
 	UpdateUser(id string, user *service.User) ([]service.User, error)
 	DeleteUser(id string) error
+	CreateFamily(familyName string) (uint, error)
+	AddToFamily(familyId, userId uint, role string) error
 }
 
 func New(cfg Config, svc Service) *Server {
@@ -37,6 +39,8 @@ func New(cfg Config, svc Service) *Server {
 	}
 
 	s.router.POST("/users", s.CreateUser)
+	s.router.POST("/families", s.CreateFamily)
+	s.router.POST("/families", s.AddToFamily)
 	s.router.PUT("/update-user/:id", s.UpdateUser)
 	s.router.GET("/users/all", s.GetAllUsers)
 	s.router.GET("/users/:id", s.GetUserById)

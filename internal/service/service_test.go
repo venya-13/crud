@@ -16,6 +16,7 @@ func (m *mockDB) GetUserById(id string) ([]User, error) {
 
 func (m *mockDB) CreateUser(name, surname, email string, age int) (uint, error) { return 0, nil }
 func (m *mockDB) CreateFamily(familyName string) (uint, error)                  { return 0, nil }
+func (m *mockDB) AddToFamily(familyId, userId uint, role string) error          { return nil }
 func (m *mockDB) GetAllUsers() ([]User, error)                                  { return nil, nil }
 func (m *mockDB) UpdateUser(id string, user User) ([]User, error) {
 	return nil, nil

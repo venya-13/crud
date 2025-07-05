@@ -47,7 +47,15 @@ func (db *DB) CreateFamily(familyName string) (uint, error) {
 	return id, nil
 }
 
-// Don't forget to create famillies table in database
+func (db *DB) AddToFamily(familyId, userId uint, role string) error {
+	query := `INSERT INTO family_members (family_id, user_id, role) VALUES ($1, $2, $3)`
+	_, err := db.db.Exec(context.Background(), query, familyId, userId, role)
+	if err != nil {
+		return fmt.Errorf("failed to add user to family: %w", err)
+	}
+
+	return nil
+}
 
 func (db *DB) GetAllUsers() ([]service.User, error) {
 	rows, err := db.db.Query(context.Background(), `SELECT id, name, surname, email, age, updated_at FROM users`)

@@ -3,10 +3,23 @@ package service
 import "time"
 
 type User struct {
-	Id        uint      `note:"column: id"`
-	Name      string    `note:"column: name"`
-	Surname   string    `note:"column: surname"`
-	Email     string    `note:"column: email"`
-	Age       int       `note:"column: age"`
-	UpdatedAt time.Time `note:"column: updated_at"`
+	Id        uint      `json:"id"`
+	Name      string    `json:"name"`
+	Surname   string    `json:"surname"`
+	Email     string    `json:"email"`
+	Age       int       `json:"age"`
+	FamilyId  uint      `json:"family_id"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type Family struct {
+	FamilyId uint   `json:"family_id"`
+	Name     string `json:"name"`
+}
+
+type FamiltMember struct {
+	FamilyId uint `json:"family_id"`
+	UserId   uint
+	Role     string
+	//Think what do you need int or uint
 }

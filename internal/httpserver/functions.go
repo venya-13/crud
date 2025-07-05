@@ -15,12 +15,20 @@ type User struct {
 	Surname   string    `json:"surname"`
 	Email     string    `json:"email"`
 	Age       int       `json:"age"`
+	FamilyId  uint      `json:"family_id"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type Family struct {
-	Id   uint   `json:"id"`
-	Name string `json:"name"`
+	FamilyId uint   `json:"family_id"`
+	Name     string `json:"name"`
+}
+
+type FamiltMember struct {
+	FamilyId uint `json:"family_id"`
+	UserId   uint
+	Role     string
+	//Think what do you need int or uint
 }
 
 // add password field to User struct
@@ -76,8 +84,34 @@ func (s *Server) CreateFamily(ginContext *gin.Context) {
 		return
 	}
 
-	family.Id = id
+	family.FamilyId = id
 	ginContext.JSON(http.StatusOK, gin.H{"Family: ": family})
+}
+
+func (s *Server) AddToFamily(ginContext *gin.Context) {
+	var familyMember FamiltMember
+
+	if err := ginContext.BindJSON(&familyMember); err != nil {
+		log.Println("Bind error", err)
+		ginContext.JSON(http.StatusBadRequest, gin.H{"Error": "Failed to bind family member"})
+		return
+	}
+
+	// Is Role field obligatory? If so, check it
+	if familyMember.FamilyId == 0 || familyMember.UserId == 0 {
+		ginContext.JSON(http.StatusBadRequest, gin.H{"Error": "FamilyId and UserId must be provided"})
+		return
+	}
+
+	err := s.svc.AddToFamily(familyMember.FamilyId, familyMember.UserId, familyMember.Role)
+
+	if err != nil {
+		log.Println("AddToFamily: handling database error in http:", err)
+		ginContext.JSON(http.StatusInternalServerError, gin.H{"Failed to add user to family": "Http error"})
+		return
+	}
+
+	ginContext.JSON(http.StatusOK, gin.H{"message": "User added to family successfully", "familyMember": familyMember})
 }
 
 func (s *Server) GetAllUsers(ginContext *gin.Context) {

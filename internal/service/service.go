@@ -11,12 +11,13 @@ type Service struct {
 
 type DB interface {
 	CreateUser(name, surname, email string, age int) (uint, error)
-	CreateFamily(familyName string) (uint, error)
 	GetAllUsers() ([]User, error)
 	GetUserById(id string) ([]User, error)
 	UpdateUser(id string, user User) ([]User, error)
 	DeleteUser(id string) error
 	Close()
+	CreateFamily(familyName string) (uint, error)
+	AddToFamily(familyId, userId uint, role string) error
 }
 
 type Redis interface {
@@ -49,15 +50,21 @@ func (svc *Service) CreateUser(user *User) (uint, error) {
 }
 
 func (svc *Service) CreateFamily(familyName string) (uint, error) {
-
-	// add cache check here
-
 	id, err := svc.db.CreateFamily(familyName)
 	if err != nil {
 		return 0, fmt.Errorf("create family database error %w", err)
 	}
 
 	return id, nil
+}
+
+func (svc *Service) AddToFamily(familyId, userId uint, role string) error {
+	err := svc.db.AddToFamily(familyId, userId, role)
+	if err != nil {
+		return fmt.Errorf("add to family database error %w", err)
+	}
+
+	return nil
 }
 
 func (svc *Service) GetAllUsers() ([]User, error) {
